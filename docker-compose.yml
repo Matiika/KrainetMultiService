@@ -1,0 +1,58 @@
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: krainetdb
+      POSTGRES_USER: matvei
+      POSTGRES_PASSWORD: secret123
+    ports:
+      - "6543:5432"
+    volumes:
+      - /var/lib/postgresql/data
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+
+  notification-service:
+    build:
+      context: ./NotificationService
+    container_name: notification-service
+    ports:
+      - "8082:8082"
+    environment:
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      # Замените на ваши данные
+      MAIL_USERNAME: your.mail@gmail.com
+      MAIL_PASSWORD: app_password
+      # Также заменить
+      SPRING_MAIL_USERNAME: your.mail@gmail.com
+      SPRING_MAIL_PASSWORD: app_password
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./UserService
+    container_name: user-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/krainetdb
+      SPRING_DATASOURCE_USERNAME: matvei
+      SPRING_DATASOURCE_PASSWORD: secret123
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
