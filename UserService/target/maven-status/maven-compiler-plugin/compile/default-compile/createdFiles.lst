@@ -1,0 +1,4 @@
+com/Krainet/UserService/model/UserModel.class
+com/Krainet/UserService/configuration/SecurityConfig.class
+com/Krainet/UserService/UserServiceApplication.class
+com/Krainet/UserService/TestController.class
